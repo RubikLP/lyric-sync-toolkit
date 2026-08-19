@@ -3,9 +3,9 @@ services:
     build: .
     image: lyric-sync-toolkit:latest
     container_name: lyric-sync-toolkit
-    # Only takes effect for containers left running (see notes below on
-    # --rm vs. detached runs); does nothing for a quick foreground command.
     restart: unless-stopped
+    ports:
+      - "8420:8420"
     volumes:
       - /mnt/user/data/media/music:/music
       - /mnt/user/appdata/lrc-tool:/data

@@ -1,3 +1,5 @@
 mutagen
 requests
 syncedlyrics
+fastapi
+uvicorn

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lyric Sync Toolkit</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">🎵 Lyric&nbsp;Sync</div>
+      <nav>
+        <button class="nav-btn active" data-view="pipeline">Pipeline</button>
+        <button class="nav-btn" data-view="settings">Setări</button>
+      </nav>
+    </aside>
+
+    <main>
+      <section id="view-pipeline" class="view active">
+        <h1>Pipeline</h1>
+
+        <div class="card path-picker">
+          <label>Folder țintă</label>
+          <div class="row">
+            <input type="text" id="selected-path" readonly value="/music">
+            <button id="browse-btn">Alege folder…</button>
+          </div>
+        </div>
+
+        <div id="steps-container" class="steps-grid"></div>
+      </section>
+
+      <section id="view-settings" class="view">
+        <h1>Setări</h1>
+        <div class="card">
+          <label for="whisper-url">Whisper URL</label>
+          <div class="row">
+            <input type="text" id="whisper-url" placeholder="http://192.168.1.105:9000">
+            <button id="test-whisper-btn">Testează</button>
+          </div>
+          <div id="whisper-status" class="status-badge"></div>
+          <button id="save-settings-btn" class="primary">Salvează</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="browse-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span id="browse-breadcrumb"></span>
+        <button id="browse-close" class="icon-btn">✕</button>
+      </div>
+      <div id="browse-list" class="browse-list"></div>
+      <div class="modal-footer">
+        <button id="browse-up">⬆ Sus</button>
+        <button id="browse-select" class="primary">Selectează acest folder</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

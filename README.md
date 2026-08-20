@@ -1,3 +1,4 @@
+<img src="assets/icon.png" width="120" alt="Lyric Sync Toolkit">
 # Lyric Sync Toolkit
 
 A self-hosted toolkit for fetching, aligning, and validating synced lyrics (`.lrc`) for a music library. Runs as a single Docker container with a small web UI on top of a seven-step command-line pipeline.

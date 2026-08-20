@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ro">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,7 +12,7 @@
       <div class="brand">🎵 Lyric&nbsp;Sync</div>
       <nav>
         <button class="nav-btn active" data-view="pipeline">Pipeline</button>
-        <button class="nav-btn" data-view="settings">Setări</button>
+        <button class="nav-btn" data-view="settings">Settings</button>
       </nav>
     </aside>
 
@@ -21,10 +21,10 @@
         <h1>Pipeline</h1>
 
         <div class="card path-picker">
-          <label>Folder țintă</label>
+          <label>Target folder</label>
           <div class="row">
             <input type="text" id="selected-path" readonly value="/music">
-            <button id="browse-btn">Alege folder…</button>
+            <button id="browse-btn">Browse…</button>
           </div>
         </div>
 
@@ -32,15 +32,15 @@
       </section>
 
       <section id="view-settings" class="view">
-        <h1>Setări</h1>
+        <h1>Settings</h1>
         <div class="card">
           <label for="whisper-url">Whisper URL</label>
           <div class="row">
-            <input type="text" id="whisper-url" placeholder="http://192.168.1.105:9000">
-            <button id="test-whisper-btn">Testează</button>
+            <input type="text" id="whisper-url" placeholder="http://192.168.x.x:9000">
+            <button id="test-whisper-btn">Test</button>
           </div>
           <div id="whisper-status" class="status-badge"></div>
-          <button id="save-settings-btn" class="primary">Salvează</button>
+          <button id="save-settings-btn" class="primary">Save</button>
         </div>
       </section>
     </main>
@@ -54,8 +54,8 @@
       </div>
       <div id="browse-list" class="browse-list"></div>
       <div class="modal-footer">
-        <button id="browse-up">⬆ Sus</button>
-        <button id="browse-select" class="primary">Selectează acest folder</button>
+        <button id="browse-up">⬆ Up</button>
+        <button id="browse-select" class="primary">Select this folder</button>
       </div>
     </div>
   </div>

@@ -47,19 +47,19 @@ document.getElementById("test-whisper-btn").addEventListener("click", async () =
   const url = document.getElementById("whisper-url").value.trim();
   const statusEl = document.getElementById("whisper-status");
   statusEl.className = "status-badge testing";
-  statusEl.textContent = "Se testează…";
+  statusEl.textContent = "Testing…";
   try {
     const result = await api("/api/test-whisper", { method: "POST", body: JSON.stringify({ url }) });
     if (result.ok) {
       statusEl.className = "status-badge ok";
-      statusEl.textContent = "✓ Conectat — " + result.detail;
+      statusEl.textContent = "✓ Connected — " + result.detail;
     } else {
       statusEl.className = "status-badge fail";
       statusEl.textContent = "✕ " + result.detail;
     }
   } catch (e) {
     statusEl.className = "status-badge fail";
-    statusEl.textContent = "✕ Eroare: " + e.message;
+    statusEl.textContent = "✕ Error: " + e.message;
   }
 });
 
@@ -68,7 +68,7 @@ document.getElementById("save-settings-btn").addEventListener("click", async () 
   await api("/api/settings", { method: "POST", body: JSON.stringify({ whisper_url }) });
   const btn = document.getElementById("save-settings-btn");
   const original = btn.textContent;
-  btn.textContent = "Salvat ✓";
+  btn.textContent = "Saved ✓";
   setTimeout(() => (btn.textContent = original), 1500);
 });
 
@@ -94,7 +94,7 @@ async function renderBrowser() {
     return;
   }
   if (data.entries.length === 0) {
-    list.innerHTML = "<div class='empty'>Niciun subfolder aici.</div>";
+    list.innerHTML = "<div class='empty'>No subfolders here.</div>";
   }
   data.entries.forEach((name) => {
     const item = document.createElement("div");
@@ -169,7 +169,7 @@ function renderStepCard(step) {
 
   const runBtn = document.createElement("button");
   runBtn.className = "primary run-btn";
-  runBtn.textContent = "Rulează";
+  runBtn.textContent = "Run";
   runBtn.addEventListener("click", () => runStep(step, card));
   card.appendChild(runBtn);
 
@@ -179,7 +179,7 @@ function renderStepCard(step) {
 
   const reportLink = document.createElement("a");
   reportLink.className = "report-link hidden";
-  reportLink.textContent = "Vezi raportul complet →";
+  reportLink.textContent = "View full report →";
   reportLink.target = "_blank";
   card.appendChild(reportLink);
 
@@ -212,12 +212,12 @@ function setAllRunButtonsDisabled(disabled) {
 
 async function runStep(step, card) {
   if (state.activeJobId) {
-    alert("Un pas rulează deja. Așteaptă să termine.");
+    alert("A step is already running. Wait for it to finish.");
     return;
   }
   const values = collectFieldValues(step, card);
   card._logBox.classList.remove("hidden");
-  card._logBox.textContent = "Se pornește…";
+  card._logBox.textContent = "Starting…";
   card._reportLink.classList.add("hidden");
   setAllRunButtonsDisabled(true);
 
@@ -229,7 +229,7 @@ async function runStep(step, card) {
     });
     jobId = resp.job_id;
   } catch (e) {
-    card._logBox.textContent = "Eroare la pornire: " + e.message;
+    card._logBox.textContent = "Failed to start: " + e.message;
     setAllRunButtonsDisabled(false);
     return;
   }
@@ -241,7 +241,7 @@ async function runStep(step, card) {
 async function pollJob(jobId, card) {
   try {
     const data = await api("/api/jobs/" + jobId);
-    card._logBox.textContent = data.output || "(fără output încă)";
+    card._logBox.textContent = data.output || "(no output yet)";
     card._logBox.scrollTop = card._logBox.scrollHeight;
     if (data.status === "running" || data.status === "starting") {
       setTimeout(() => pollJob(jobId, card), 1500);
@@ -250,11 +250,11 @@ async function pollJob(jobId, card) {
       setAllRunButtonsDisabled(false);
       card._reportLink.href = "/api/reports/" + data.report_name;
       card._reportLink.classList.remove("hidden");
-      const label = data.status === "done" ? "Gata." : `A eșuat (cod ${data.returncode}).`;
+      const label = data.status === "done" ? "Done." : `Failed (exit code ${data.returncode}).`;
       card._logBox.textContent += `\n\n--- ${label} ---`;
     }
   } catch (e) {
-    card._logBox.textContent += "\n\nEroare la interogare: " + e.message;
+    card._logBox.textContent += "\n\nError while polling: " + e.message;
     state.activeJobId = null;
     setAllRunButtonsDisabled(false);
   }

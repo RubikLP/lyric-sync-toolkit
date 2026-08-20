@@ -1,11 +1,10 @@
 services:
   lyric-sync:
-    build: .
-    image: lyric-sync-toolkit:latest
+    image: ghcr.io/rubiklp/lyric-sync-toolkit:latest
     container_name: lyric-sync-toolkit
     restart: unless-stopped
     ports:
-      - "8420:8420"
+      - "${WEBUI_PORT:-8420}:8420"
     volumes:
-      - /mnt/user/data/media/music:/music
-      - /mnt/user/appdata/lrc-tool:/data
+      - ${MUSIC_PATH}:/music
+      - ${APPDATA_PATH}:/data

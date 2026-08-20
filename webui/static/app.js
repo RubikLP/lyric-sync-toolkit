@@ -248,10 +248,15 @@ async function pollJob(jobId, card) {
     } else {
       state.activeJobId = null;
       setAllRunButtonsDisabled(false);
-      card._reportLink.href = "/api/reports/" + data.report_name;
-      card._reportLink.classList.remove("hidden");
       const label = data.status === "done" ? "Done." : `Failed (exit code ${data.returncode}).`;
       card._logBox.textContent += `\n\n--- ${label} ---`;
+      if (data.report_name) {
+        card._reportLink.href = "/api/reports/" + data.report_name;
+        card._reportLink.textContent = "View full report →";
+        card._reportLink.classList.remove("hidden");
+      } else if (data.status === "done") {
+        card._logBox.textContent += "\n(This run did not produce a report file — see the output above.)";
+      }
     }
   } catch (e) {
     card._logBox.textContent += "\n\nError while polling: " + e.message;

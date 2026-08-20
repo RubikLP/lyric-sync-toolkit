@@ -262,7 +262,7 @@ def build_argv(subcommand: str, root_abs: str, values: dict, report_abs: str) ->
     return argv
 
 
-def run_job(job_id: str, argv: list[str]) -> None:
+def run_job(job_id: str, argv: list[str], report_path: str) -> None:
     global CURRENT_JOB_ID
     with JOBS_LOCK:
         JOBS[job_id]["status"] = "running"
@@ -278,9 +278,16 @@ def run_job(job_id: str, argv: list[str]) -> None:
                 if len(out) > 1000:
                     JOBS[job_id]["output"] = out[-1000:]
         proc.wait()
+        # Not every module writes a report in every mode - fetch.py, in
+        # particular, returns before writing one when run as a dry run
+        # (no --fetch). Check what actually landed on disk rather than
+        # assuming the report always exists, so the UI never links to a
+        # file that was never created.
+        report_exists = Path(report_path).exists()
         with JOBS_LOCK:
             JOBS[job_id]["status"] = "done" if proc.returncode == 0 else "failed"
             JOBS[job_id]["returncode"] = proc.returncode
+            JOBS[job_id]["report_exists"] = report_exists
     except Exception as e:
         with JOBS_LOCK:
             JOBS[job_id]["status"] = "failed"
@@ -334,11 +341,11 @@ def create_job(req: JobRequest):
     with JOBS_LOCK:
         JOBS[job_id] = {
             "subcommand": req.subcommand, "status": "starting", "output": [],
-            "returncode": None, "report_name": report_name,
+            "returncode": None, "report_name": report_name, "report_exists": False,
         }
         CURRENT_JOB_ID = job_id
 
-    threading.Thread(target=run_job, args=(job_id, argv), daemon=True).start()
+    threading.Thread(target=run_job, args=(job_id, argv, report_abs), daemon=True).start()
     return {"job_id": job_id}
 
 
@@ -353,7 +360,7 @@ def get_job(job_id: str):
             "status": job["status"],
             "output": "\n".join(job["output"]),
             "returncode": job["returncode"],
-            "report_name": job["report_name"],
+            "report_name": job["report_name"] if job.get("report_exists") else None,
         }
 
 

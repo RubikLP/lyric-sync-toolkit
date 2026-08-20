@@ -241,6 +241,27 @@ JOBS: dict[str, dict] = {}
 JOBS_LOCK = threading.Lock()
 CURRENT_JOB_ID: Optional[str] = None
 
+# Every run writes its own uniquely-named report so parallel history never
+# collides, but that means they never get overwritten either. Keep the
+# folder bounded by pruning older reports for the same subcommand after
+# each run.
+REPORT_RETENTION_PER_STEP = 10
+
+
+def prune_old_reports(subcommand: str, keep: int = REPORT_RETENTION_PER_STEP) -> None:
+    if not REPORTS_DIR.exists():
+        return
+    matches = sorted(
+        REPORTS_DIR.glob(f"{subcommand}_*.txt"),
+        key=lambda p: p.stat().st_mtime,
+        reverse=True,
+    )
+    for old in matches[keep:]:
+        try:
+            old.unlink()
+        except OSError:
+            pass
+
 
 def build_argv(subcommand: str, root_abs: str, values: dict, report_abs: str) -> list[str]:
     step = STEPS_BY_ID[subcommand]
@@ -288,6 +309,8 @@ def run_job(job_id: str, argv: list[str], report_path: str) -> None:
             JOBS[job_id]["status"] = "done" if proc.returncode == 0 else "failed"
             JOBS[job_id]["returncode"] = proc.returncode
             JOBS[job_id]["report_exists"] = report_exists
+            subcommand = JOBS[job_id]["subcommand"]
+        prune_old_reports(subcommand)
     except Exception as e:
         with JOBS_LOCK:
             JOBS[job_id]["status"] = "failed"
